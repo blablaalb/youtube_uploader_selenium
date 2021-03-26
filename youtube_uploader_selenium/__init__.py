@@ -48,8 +48,8 @@ class YouTubeUploader:
             return self.__upload()
         except Exception as e:
             print(e)
-            self.__quit()
-            raise
+            # self.__quit()
+            # raise
 
     def __login(self):
         self.browser.get(Constant.YOUTUBE_URL)
@@ -98,7 +98,9 @@ class YouTubeUploader:
         if video_description:
             description_container = self.browser.find(By.XPATH,
                                                       Constant.DESCRIPTION_CONTAINER)
-            description_field = self.browser.find(By.ID, Constant.TEXTBOX, element=description_container)
+            # description_field = self.browser.find(By.ID, Constant.TEXTBOX, element=description_container)
+            # NOTE: description_field we fixed!
+            description_field = self.browser.find(By.XPATH, '//*[@id="details" and @class="style-scope ytcp-uploads-dialog"]//*[@id="textbox" and contains(@aria-label, "Tell viewers")]')
             self.__write_in_field(description_field, self.metadata_dict[Constant.VIDEO_DESCRIPTION])
             self.logger.debug(
                 'The video description was set to \"{}\"'.format(self.metadata_dict[Constant.VIDEO_DESCRIPTION]))
@@ -111,9 +113,10 @@ class YouTubeUploader:
         self.browser.find(By.XPATH, Constant.MORE_BUTTON).click()
         self.logger.debug('Clicked MORE OPTIONS')
 
-        tags_container = self.browser.find(By.XPATH,
-                                                    Constant.TAGS_INPUT_CONTAINER)
-        tags_field = self.browser.find(By.ID, Constant.TAGS_INPUT, element=tags_container)
+        # tags_container = self.browser.find(By.XPATH, Constant.TAGS_INPUT_CONTAINER)
+        # tags_field = self.browser.find(By.ID, Constant.TAGS_INPUT, element=tags_container)
+        # NOTE: Seems like we fixed tags_field!
+        tags_field = self.browser.find(By.XPATH, '//*[@id="text-input" and @aria-label="Tags"]')
         self.__write_in_field(tags_field, ','.join(self.metadata_dict[Constant.VIDEO_TAGS]))
         self.logger.debug(
             'The tags were set to \"{}\"'.format(self.metadata_dict[Constant.VIDEO_TAGS]))
@@ -124,8 +127,13 @@ class YouTubeUploader:
         self.browser.find(By.ID, Constant.NEXT_BUTTON).click()
         self.logger.debug('Clicked another {}'.format(Constant.NEXT_BUTTON))
 
-        public_main_button = self.browser.find(By.NAME, Constant.PUBLIC_BUTTON)
-        self.browser.find(By.ID, Constant.RADIO_LABEL, public_main_button).click()
+        self.browser.find(By.ID, Constant.NEXT_BUTTON).click()
+        self.logger.debug('Clicked another {}'.format(Constant.NEXT_BUTTON))
+
+        # public_main_button = self.browser.find(By.NAME, Constant.PUBLIC_BUTTON)
+        # self.browser.find(By.ID, Constant.RADIO_LABEL, public_main_button).click()
+        # NOTE: We fixed pathf or visibility (PUBLIC)
+        self.browser.find(By.XPATH, '//*[@id="privacy-radios"]/*[@name="PUBLIC"]').click()
         self.logger.debug('Made the video {}'.format(Constant.PUBLIC_BUTTON))
 
         video_id = self.__get_video_id()
